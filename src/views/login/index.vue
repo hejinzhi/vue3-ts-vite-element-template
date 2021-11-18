@@ -43,19 +43,22 @@
           @keyup.enter="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon
+            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+          />
         </span>
       </el-form-item>
 
       <el-button
         :loading="loading"
         type="primary"
-        style="width:100%;margin-bottom:30px;"
+        style="width: 100%; margin-bottom: 30px"
         @click.prevent="handleLogin"
-      >Login</el-button>
+        >Login</el-button
+      >
 
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
+        <span style="margin-right: 20px">username: admin</span>
         <span>password: any</span>
       </div>
     </el-form>
@@ -64,21 +67,20 @@
 
 <script lang="ts">
 // import { validUsername } from '@/utils/validate'
-import type Form from 'element-plus/lib/el-form'
-import { defineComponent, nextTick, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
-import { RuleItem } from "async-validator"
-import { GlobalDataPropsKey } from '@/store/index'
-
+import type Form from "element-plus/lib/el-form";
+import { defineComponent, nextTick, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { RuleItem } from "async-validator";
+import { GlobalDataPropsKey } from "@/store/index";
 
 export default defineComponent({
-  name: 'Login',
+  name: "Login",
   setup() {
     const loginForm = ref({
-      tel: '15818087802',
-      password: '123456'
-    })
+      tel: "15818087802",
+      password: "123456",
+    });
 
     // const validateUsername: RuleItem["validator"] = (rule, value, callback) => {
     //   if (!validUsername(value)) {
@@ -95,60 +97,75 @@ export default defineComponent({
     //   }
     // }
     const loginRules = ref<Rules>({
-      tel: [{ required: true, trigger: 'blur' }],
-      password: [{ required: true, trigger: 'blur'}]
-    })
+      tel: [{ required: true, trigger: "blur" }],
+      password: [{ required: true, trigger: "blur" }],
+    });
 
     interface Rules {
-      [field: string]: RuleItem & { trigger?: string } | (RuleItem & { trigger?: string })[];
+      [field: string]:
+        | (RuleItem & { trigger?: string })
+        | (RuleItem & { trigger?: string })[];
     }
 
-    const loading = ref(false)
-    const passwordType = ref('password')
-    const redirect = ref('')
+    const loading = ref(false);
+    const passwordType = ref("password");
+    const redirect = ref("");
 
-    const route = useRoute()
-    const router = useRouter()
-    watch(() => route.query.redirect, (val) => {
-      redirect.value = val as string
-    }, { immediate: true })
+    const route = useRoute();
+    const router = useRouter();
+    watch(
+      () => route.query.redirect,
+      (val) => {
+        redirect.value = val as string;
+      },
+      { immediate: true }
+    );
 
-    const loginFormComp = ref<InstanceType<typeof Form> | null>(null)
-    const store = useStore(GlobalDataPropsKey)
+    const loginFormComp = ref<InstanceType<typeof Form> | null>(null);
+    const store = useStore(GlobalDataPropsKey);
     function handleLogin() {
-
-      loginFormComp.value?.validate(valid => {
+      loginFormComp.value?.validate((valid) => {
         if (valid) {
-          loading.value = true
-          store.dispatch('user/login', loginForm.value).then(() => {
-            router.push({ path: redirect.value || '/' })
-            loading.value = false
-          }).catch(() => {
-            loading.value = false
-          })
+          loading.value = true;
+          store
+            .dispatch("user/login", loginForm.value)
+            .then(() => {
+              router.push({ path: redirect.value || "/" });
+              loading.value = false;
+            })
+            .catch(() => {
+              loading.value = false;
+            });
         } else {
-          console.log('error submit!!')
-          return false
+          console.log("error submit!!");
+          return false;
         }
-      })
+      });
     }
-    const password = ref<HTMLInputElement | null>(null)
+    const password = ref<HTMLInputElement | null>(null);
 
     function showPwd() {
-      if (passwordType.value === 'password') {
-        passwordType.value = ''
+      if (passwordType.value === "password") {
+        passwordType.value = "";
       } else {
-        passwordType.value = 'password'
+        passwordType.value = "password";
       }
       nextTick(() => {
-        password.value?.focus()
-      })
+        password.value?.focus();
+      });
     }
 
-    return { loginRules, loginForm, loading, passwordType, showPwd, handleLogin, loginFormComp }
-
-  }
-})
+    return {
+      loginRules,
+      loginForm,
+      loading,
+      passwordType,
+      showPwd,
+      handleLogin,
+      loginFormComp,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
